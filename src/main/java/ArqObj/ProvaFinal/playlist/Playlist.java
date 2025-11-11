@@ -8,10 +8,7 @@ import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "playlist")
@@ -92,4 +89,15 @@ public class Playlist {
     }
 
 
+    public Set<Musica> getMusicas() {
+        return musicas;
+    }
+
+    public void removerMusica(Musica musica) {
+        this.musicas.remove(musica);
+    }
+
+    public void adicionarMusica(Musica musica) {
+        this.musicas.add(musica);
+    }
 }
