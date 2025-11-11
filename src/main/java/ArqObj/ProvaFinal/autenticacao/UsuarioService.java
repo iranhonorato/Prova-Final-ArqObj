@@ -1,15 +1,20 @@
 package ArqObj.ProvaFinal.autenticacao;
 
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UsuarioService {
+
+    private final HashMap<String, Usuario> tokensDB = new HashMap<>();
 
     @Autowired
     private UsuarioRepository repository;
@@ -18,11 +23,49 @@ public class UsuarioService {
         return repository.findAll();
     }
 
-    public Usuario findByEmail(String email) {
-        return repository.findByEmail(email);
+    public Usuario cadastrarUsuario(Usuario novoUsuario) {
+        if (repository.findByEmail(novoUsuario.getEmail()) != null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado");
+        }
+
+        String hashedPassword = BCrypt.hashpw(novoUsuario.getPassword(), BCrypt.gensalt());
+        novoUsuario.setPassword(hashedPassword);
+        Usuario salvo = repository.save(novoUsuario);
+        return salvo;
     }
 
 
+    public String login(Usuario usuario) {
+        Usuario userDB = repository.findByEmail(usuario.getEmail());
+        if (userDB == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não encontrado");
+        }
+        if (!BCrypt.checkpw(usuario.getPassword(), userDB.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Senha inválida");
+        }
+
+        return gerarToken(userDB);
+    }
+
+
+    public String gerarToken(Usuario usuario) {
+        String token = UUID.randomUUID().toString();
+        tokensDB.put(token, usuario);
+        return token;
+    }
+
+
+    public Usuario validarToken(String token) {
+        Usuario usuario = tokensDB.get(token);
+        if (usuario == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token inválido");
+        }
+        Usuario userDB = repository.findByEmail(usuario.getEmail());
+        if (userDB == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token inválido");
+        }
+        return userDB;
+    }
 
 
 }
