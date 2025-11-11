@@ -1,12 +1,16 @@
 package ArqObj.ProvaFinal.musica;
 
 
+import ArqObj.ProvaFinal.playlist.Playlist;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "musica")
@@ -37,6 +41,9 @@ public class Musica {
     private String genero;
 
 
+    @ManyToMany(mappedBy = "musicas", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private Set<Playlist> playlists = new HashSet<>();
 
     public Musica() {}
 

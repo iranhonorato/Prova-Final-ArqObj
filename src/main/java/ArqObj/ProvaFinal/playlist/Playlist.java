@@ -2,12 +2,16 @@ package ArqObj.ProvaFinal.playlist;
 
 
 import ArqObj.ProvaFinal.musica.Musica;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "playlist")
@@ -35,8 +39,14 @@ public class Playlist {
     private String email;
 
 
-    @Column(nullable = true)
-    private final List<Musica> musicas = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "playlist_musicas",
+            joinColumns = @JoinColumn(name = "playlist_id"),
+            inverseJoinColumns = @JoinColumn(name = "musica_id")
+    )
+    @JsonManagedReference
+    private Set<Musica> musicas = new HashSet<>();
 
 
     public Playlist() {}
@@ -73,7 +83,7 @@ public class Playlist {
     }
 
 
-    public List<Musica> listarMusicas() {
+    public Set<Musica> listarMusicas() {
         return this.musicas;
     }
 
