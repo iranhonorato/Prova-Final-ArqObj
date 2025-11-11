@@ -22,10 +22,14 @@ public class MusicaService {
 
 
     public Musica cadastrarMusica(Musica novaMusica) {
+        if (repository.findByTitulo(novaMusica.getTitulo()) != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Essa música já existe");
+        }
+
         if (novaMusica == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "É necessário inserir os dados da música");
         }
-        if (novaMusica.getTitulo() == null || novaMusica.getTitulo().isEmpty()) {
+        if (novaMusica.getTitulo() == null || novaMusica.getTitulo().isEmpty() || novaMusica.getTitulo().isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Observe se todos os campos estão preenchidos corretamente");
         }
         repository.save(novaMusica);
@@ -39,6 +43,12 @@ public class MusicaService {
         if (existente == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Música não encontrada");
         }
+
+        if (existente.getPlaylists() != null && !existente.getPlaylists().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Não é possível excluir: a música está em uma ou mais playlists");
+        }
+
         repository.delete(existente);
     }
 }

@@ -99,4 +99,8 @@ public class Musica {
     public void setGenero(String genero) {
         this.genero = genero;
     }
+
+    public Set<Playlist> getPlaylists() {
+        return playlists;
+    }
 }
