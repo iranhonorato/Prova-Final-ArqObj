@@ -44,6 +44,38 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+
+
+        <!--    O H2 Database é um banco em memória (usado normalmente para desenvolvimento e testes).
+        Ele não precisa de instalação, o Spring Boot sobe ele automaticamente quando a dependência está presente.-->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+            <version>2.3.232</version>
+        </dependency>
+
+
+
+
+        <!--    Para criptografar (hashificar) senhas, o mais comum no Spring é usar o BCrypt, que já vem no Spring Security.-->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
+
+
+
+        <!--    Adiciona o Swagger/OpenAPI automaticamente ao seu projeto Spring Boot.
+            Gera documentação OpenAPI (Swagger) automaticamente para a sua API REST.
+            Cria uma interface web interativa onde você pode testar os endpoints (sem precisar usar Postman ou cURL).-->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.3.0</version>
+        </dependency>
 	</dependencies>
 
 	<build>
