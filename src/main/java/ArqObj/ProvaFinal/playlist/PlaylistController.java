@@ -1,14 +1,12 @@
 package ArqObj.ProvaFinal.playlist;
 
 
+import ArqObj.ProvaFinal.autenticacao.Usuario;
 import ArqObj.ProvaFinal.autenticacao.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -34,7 +32,6 @@ public class PlaylistController {
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode()).body(null);
         } catch (Exception e) {
-            // erro inesperado
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
@@ -48,6 +45,64 @@ public class PlaylistController {
             return ResponseEntity.status(e.getStatusCode()).body(null);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+
+    @PostMapping
+    public ResponseEntity<Playlist> cadastrarPlaylist(
+            @RequestBody Playlist novaPlaylist,
+            @RequestHeader("Authorization") String token) {
+
+        Usuario usuario = usuarioService.validarToken(token);
+
+        Playlist salvo = playlistService.cadastrarPlaylist(novaPlaylist);
+        return ResponseEntity.ok(salvo);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deletarPlaylist(
+            @PathVariable Integer id,
+            @RequestHeader(name = "token") String token) {
+
+        Usuario usuario = usuarioService.validarToken(token);
+
+        playlistService.deletarPlaylist(id);
+    }
+
+
+    @PostMapping("/{playlistId}/musicas/{musicaId}")
+    public ResponseEntity<?> adicionarMusicaNaPlaylist(
+            @PathVariable Integer playlistId,
+            @PathVariable Integer musicaId,
+            @RequestHeader("Authorization") String token) {
+
+        try {
+            Usuario usuario = usuarioService.validarToken(token);
+            Playlist atualizada = playlistService.adicionarMusicaNaPlaylist(playlistId, musicaId);
+            return ResponseEntity.ok(atualizada);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno");
+        }
+    }
+
+    @DeleteMapping("/{playlistId}/musicas/{musicaId}")
+    public ResponseEntity<?> removerMusicaDaPlaylist(
+            @PathVariable Integer playlistId,
+            @PathVariable Integer musicaId,
+            @RequestHeader("Authorization") String token) {
+
+        try {
+            Usuario usuario = usuarioService.validarToken(token);
+            Playlist atualizada = playlistService.removerMusicaDaPlaylist(playlistId, musicaId);
+            return ResponseEntity.ok(atualizada);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno");
         }
     }
 }
