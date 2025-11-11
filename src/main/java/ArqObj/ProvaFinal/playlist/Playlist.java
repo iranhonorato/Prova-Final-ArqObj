@@ -58,6 +58,10 @@ public class Playlist {
         this.email = email;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
     public String getEmail() {
         return email;
     }

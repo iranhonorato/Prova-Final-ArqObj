@@ -56,6 +56,10 @@ public class Musica {
         this.genero = genero;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
     public String getTitulo() {
         return titulo;
     }
